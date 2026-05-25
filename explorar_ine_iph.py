@@ -1,8 +1,8 @@
 import pandas as pd
 import os
 
-RAW = '/Users/tiagoantunes/EMPRESA/03_DADOS/raw/2026-05_ine_iph_variacao_trimestral.csv'
-PROCESSED = '/Users/tiagoantunes/EMPRESA/03_DADOS/processed/2026-05_ine_iph_limpo.csv'
+RAW = '/Users/tiagoantunes/Desktop/EMPRESA/03_DADOS/raw/2026-05_ine_iph_variacao_trimestral.csv'
+PROCESSED = '/Users/tiagoantunes/Desktop/EMPRESA/03_DADOS/processed/2026-05_ine_iph_limpo.csv'
 
 df = pd.read_csv(RAW, encoding='latin-1', sep=';', skiprows=3)
 
