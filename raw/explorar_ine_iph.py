@@ -15,6 +15,7 @@ df['variacao_pct'] = pd.to_numeric(df['variacao_pct'].astype(str).str.replace(',
 df['ano'] = df['periodo'].str.extract(r'(\d{4})').astype(int)
 df['trimestre_num'] = df['periodo'].str.extract(r'(\d)\.º Trimestre').astype(int)
 df['periodo_ordem'] = df['ano'] * 10 + df['trimestre_num']
+df['data_trimestre'] = df['ano'].astype(str) + '-Q' + df['trimestre_num'].astype(str)
 
 os.makedirs(os.path.dirname(PROCESSED), exist_ok=True)
 df.to_csv(PROCESSED, index=False, encoding='utf-8')
