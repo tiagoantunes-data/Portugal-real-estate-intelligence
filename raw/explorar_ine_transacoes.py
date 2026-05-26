@@ -8,22 +8,21 @@ df = pd.read_csv(RAW, encoding='utf-8', sep=';', skiprows=12, header=None)
 df.columns = ['periodo', 'localizacao', 'valor_milhares_eur', 'extra']
 df = df[['periodo', 'localizacao', 'valor_milhares_eur']]
 
-# Forward fill período
 df['periodo'] = df['periodo'].ffill()
-
-# Manter só linhas com valor numérico
 df['valor_milhares_eur'] = pd.to_numeric(df['valor_milhares_eur'], errors='coerce')
 df = df.dropna(subset=['valor_milhares_eur'])
 df = df.dropna(subset=['localizacao'])
 df = df.reset_index(drop=True)
 
-# Guardar
+# Extrair ano e trimestre para ordenação
+df['ano'] = df['periodo'].str.extract(r'(\d{4})').astype(int)
+df['trimestre_num'] = df['periodo'].str.extract(r'(\d)\.º Trimestre').astype(int)
+df['periodo_ordem'] = df['ano'] * 10 + df['trimestre_num']
+
 os.makedirs(os.path.dirname(PROCESSED), exist_ok=True)
 df.to_csv(PROCESSED, index=False, encoding='utf-8')
 
 print("Dataset processado:")
-print(df.head(20))
+print(df.head(10))
 print(f"\nShape: {df.shape}")
-print(f"\nPeríodos únicos: {df['periodo'].nunique()}")
-print(f"Localizações únicas: {df['localizacao'].nunique()}")
 print(f"\nGuardado em: {PROCESSED}")

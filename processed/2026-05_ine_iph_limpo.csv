@@ -1,6 +1,6 @@
-periodo,categoria,variacao_pct
-4.º Trimestre de 2025,Total,4
-3.º Trimestre de 2025,Total,"4,1"
-2.º Trimestre de 2025,Total,"4,8"
-1.º Trimestre de 2025,Total,"4,8"
-4.º Trimestre de 2024,Total,3
+periodo,categoria,variacao_pct,ano,trimestre_num,periodo_ordem
+4.º Trimestre de 2025,Total,4,2025,4,20254
+3.º Trimestre de 2025,Total,"4,1",2025,3,20253
+2.º Trimestre de 2025,Total,"4,8",2025,2,20252
+1.º Trimestre de 2025,Total,"4,8",2025,1,20251
+4.º Trimestre de 2024,Total,3,2024,4,20244
