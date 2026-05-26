@@ -4,11 +4,13 @@ import os
 RAW = '/Users/tiagoantunes/Desktop/EMPRESA/03_DADOS/raw/2026-05_ine_iph_variacao_trimestral.csv'
 PROCESSED = '/Users/tiagoantunes/Desktop/EMPRESA/03_DADOS/processed/2026-05_ine_iph_limpo.csv'
 
-df = pd.read_csv(RAW, encoding='latin-1', sep=';', skiprows=3, header=None)
+df = pd.read_csv(RAW, encoding='latin-1', sep=';', skiprows=3, header=None, usecols=[0, 1, 2])
 df.columns = ['periodo', 'categoria', 'variacao_pct']
+df['periodo'] = df['periodo'].ffill()
 df = df.dropna(subset=['variacao_pct'])
 df = df[df['periodo'].str.contains('Trimestre', na=False)]
 df = df.reset_index(drop=True)
+df['variacao_pct'] = pd.to_numeric(df['variacao_pct'].astype(str).str.replace(',', '.'), errors='coerce')
 
 df['ano'] = df['periodo'].str.extract(r'(\d{4})').astype(int)
 df['trimestre_num'] = df['periodo'].str.extract(r'(\d)\.º Trimestre').astype(int)
