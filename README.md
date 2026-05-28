@@ -1,35 +1,61 @@
 # Portugal Real Estate Intelligence
 
-Data infrastructure and dashboards for the Portuguese real estate market — built from public sources (INE), cleaned with Python, and visualised in Power BI.
+Data infrastructure, analysis pipelines and market reports for the Portuguese real estate ecosystem — built from public sources (INE), processed in Python/DuckDB, visualised in Power BI and published as PDF dossiers.
+
+> Built by **LUXAR** — data, AI and automation for real estate professionals.
 
 ---
 
-## Dashboards
+## Latest Release — Dossier de Mercado | Península de Setúbal
 
-Three pages tracking the Portuguese real estate market from 2009 to 2025:
+**[Download PDF →](outputs/LUXAR_Dossier_Mercado_Setubal_v1.pdf)** · v1.0 · May 2026 · 10 pages
 
-### 1. Transaction Value — Total value of residential property transactions (€ billions)
+A full quarterly market intelligence report covering 9 municipalities in the Setúbal Peninsula (NUTS 1B), from Q1 2019 to Q4 2025.
 
+| | |
+|---|---|
+| ![Price evolution](outputs/graficos_setubal/01_evolucao_preco_subreigiao.png) | ![Municipality comparison](outputs/graficos_setubal/02_evolucao_preco_municipios.png) |
+| **Sub-region price series 2019–2025** | **Per-municipality evolution 2022–2025** |
+| ![Q4 2025 ranking](outputs/graficos_setubal/03_ranking_preco_q4_2025.png) | ![Transaction volume](outputs/graficos_setubal/04_volume_transacoes_trimestral.png) |
+| **Municipality ranking — Q4 2025** | **Transaction volume with 4-quarter moving average** |
+| ![YoY heatmap](outputs/graficos_setubal/05_heatmap_yoy_municipios.png) | ![2025 price distribution](outputs/graficos_setubal/06_distribuicao_precos_2025.png) |
+| **Year-on-year variation heatmap** | **Intra-2025 price distribution** |
+
+### Key findings — Q4 2025
+
+| Municipality | Median €/m² | YoY change |
+|---|---|---|
+| Almada | 3,311 € | +18.9% |
+| Sesimbra | 3,010 € | +25.3% |
+| Seixal | 2,901 € | +27.0% |
+| Barreiro | 2,821 € | +35.0% |
+| Alcochete | 2,737 € | +24.4% |
+| Setúbal | 2,699 € | +27.3% |
+| Montijo | 2,652 € | +27.4% |
+| Moita | 2,510 € | +37.2% |
+| Palmela | 2,471 € | +17.2% |
+
+The sub-region recorded a median price of **2,831 €/m²** in Q4 2025 — up **+121%** since Q1 2019 and accelerating (+27.4% YoY).
+
+---
+
+## National Dashboard — Power BI
+
+Three pages tracking the Portuguese residential market from 2009 to Q4 2025.
+
+### Transaction Value (€ billions/quarter)
 ![Transaction Value](screenshots/dashboard_valor_transacoes.png)
+- Post-crisis low: 2013–2014
+- Q4 2025: ~€10.8 billion
 
-- Market bottomed out during the sovereign debt crisis (2013–2014)
-- Strong recovery from 2015 onwards
-- Q4 2025: ~€10.8 billion transacted in a single quarter
-
-### 2. Transaction Volume — Number of residential property transactions
-
+### Transaction Volume (units/quarter)
 ![Transaction Volume](screenshots/dashboard_numero_transacoes.png)
+- Crisis low: ~14,000/quarter (2013)
+- Q4 2025: ~43,000 transactions
 
-- Crisis low: ~14,000 transactions/quarter (2013)
-- COVID dip clearly visible in Q2 2020
-- Q4 2025: ~43,000 transactions/quarter
-
-### 3. House Price Index (IPH) — Annual % change in house prices
-
+### House Price Index — Annual % change
 ![House Price Index](screenshots/dashboard_iph_variacao.png)
-
-- Q1–Q2 2025: +4.8% year-on-year
-- Q4 2025: +4.0% (slight deceleration, still positive)
+- Q4 2025: +4.0% YoY (sustained positive growth)
 
 ---
 
@@ -37,72 +63,102 @@ Three pages tracking the Portuguese real estate market from 2009 to 2025:
 
 | Dataset | Source | Period | Granularity |
 |---------|--------|--------|-------------|
-| Transaction Value (€ thousands) | INE — Housing Price Index | 2009 Q1 – 2025 Q4 | Quarterly × NUTS II |
-| Transaction Volume (N.º) | INE — Housing Price Index | 2009 Q1 – 2025 Q4 | Quarterly × NUTS II |
+| EPH — Median price/m² by municipality | INE — Estatísticas de Preços da Habitação ao Nível Local | 2019 Q1 – 2025 Q4 | Quarterly × municipality |
+| EPH — Transaction volume by municipality | INE — EPH | 2019 Q1 – 2025 Q4 | Quarterly × municipality |
+| Transaction value (€) | INE — Housing Price Index | 2009 Q1 – 2025 Q4 | Quarterly × NUTS II |
+| Transaction volume (N.º) | INE — Housing Price Index | 2009 Q1 – 2025 Q4 | Quarterly × NUTS II |
 | House Price Index (% YoY) | INE — Housing Price Index | 2024 Q4 – 2025 Q4 | Quarterly |
 
-All data downloaded from [www.ine.pt](https://www.ine.pt) — free, public, no authentication required.
+All data from [www.ine.pt](https://www.ine.pt) — free, public, no authentication required.
 
 ---
 
 ## Repository Structure
 
 ```
-├── raw/                    # Original INE exports (CSV, semicolon-separated)
-│   ├── 2026-05_ine_iph_variacao_trimestral.csv
-│   ├── 2026-05_ine_transacoes_alojamentos_familiares_nuts.csv
-│   ├── 2026-05_ine_transacoes_numero_alojamentos_familiares_nuts_correto.csv
-│   ├── explorar_ine_iph.py
-│   ├── explorar_ine_transacoes.py
-│   └── explorar_ine_transacoes_numero.py
+├── scripts/
+│   ├── 01_processar_ine_eph_setubal.py   # ETL pipeline — INE EPH → Parquet/CSV
+│   ├── 02_graficos_setubal.py             # Matplotlib charts → PNG
+│   └── 03_dossier_pdf_setubal.py          # PDF report generator (ReportLab)
 │
-├── processed/              # Clean CSVs ready for analysis or Power BI
+├── raw/
+│   ├── setup_dados_setubal.sh             # Downloads INE EPH source files
+│   ├── 2026-05_ine_*.csv                  # National INE exports (NUTS level)
+│   └── explorar_ine_*.py                  # Exploratory scripts
+│
+├── processed/
+│   ├── ine_eph/
+│   │   ├── ine_eph_setubal_trimestral.parquet          # All territories (308 rows)
+│   │   ├── ine_eph_setubal_trimestral.csv
+│   │   ├── ine_eph_setubal_municipios_trimestral.parquet  # Municipalities only (252 rows)
+│   │   └── ine_eph_setubal_municipios_trimestral.csv
 │   ├── 2026-05_ine_iph_limpo.csv
 │   ├── 2026-05_ine_transacoes_alojamentos_familiares_limpo.csv
 │   └── 2026-05_ine_transacoes_numero_alojamentos_familiares_limpo.csv
 │
-├── screenshots/            # Dashboard previews
-│   ├── dashboard_valor_transacoes.png
-│   ├── dashboard_numero_transacoes.png
-│   └── dashboard_iph_variacao.png
+├── outputs/
+│   ├── LUXAR_Dossier_Mercado_Setubal_v1.pdf
+│   └── graficos_setubal/                  # 6 publication-ready PNGs
 │
-└── Dashboard_Imobiliario_Portugal.pbix   # Power BI dashboard (3 pages)
+├── screenshots/                           # Power BI dashboard previews
+└── Dashboard_Imobiliario_Portugal.pbix    # Power BI file
 ```
 
 ---
 
-## Processed Dataset Schema
-
-All processed files share the same structure:
+## Processed Dataset Schema — EPH Municipality Data
 
 | Column | Type | Description |
 |--------|------|-------------|
-| `periodo` | text | Original Portuguese period label |
-| `localizacao` / `categoria` | text | NUTS II region or IPH category |
-| `valor_milhares_eur` / `numero_transacoes` / `variacao_pct` | number | Metric value |
+| `cod` | str | INE/NUTS territory code (e.g. `1B01503`) |
+| `designacao` | str | Territory name |
+| `data` | date | First day of the quarter (e.g. `2025-10-01`) |
 | `ano` | int | Year |
-| `trimestre_num` | int | Quarter number (1–4) |
-| `periodo_ordem` | int | Sort key (YYYYQ format, e.g. 20091) |
-| `data_trimestre` | text | Readable period label (e.g. "2009-Q1") |
+| `trimestre` | int | Quarter (1–4) |
+| `preco_mediano_m2` | float | Median sale price per m² (€) |
+| `n_transacoes` | float | Number of transactions |
+| `tipo_territorio` | str | `município` or `sub-região` |
+| `periodo` | str | Human-readable label (e.g. `2025 Q4`) |
+| `preco_yoy_pct` | float | Year-on-year price change (%) |
+| `preco_qoq_pct` | float | Quarter-on-quarter price change (%) |
+| `transacoes_yoy_pct` | float | Year-on-year transaction volume change (%) |
+
+---
+
+## Reproducing the Analysis
+
+```bash
+# 1. Download source data from INE
+bash raw/setup_dados_setubal.sh
+
+# 2. Run ETL pipeline
+python scripts/01_processar_ine_eph_setubal.py
+
+# 3. Generate charts
+python scripts/02_graficos_setubal.py
+
+# 4. Build PDF dossier
+python scripts/03_dossier_pdf_setubal.py
+```
+
+**Requirements:** Python 3.11+, pandas, openpyxl, duckdb, matplotlib, reportlab
+
+```bash
+pip install pandas openpyxl duckdb matplotlib reportlab
+```
 
 ---
 
 ## Stack
 
-- **Python + Pandas** — data cleaning and transformation
-- **Power BI Desktop** — dashboards and visualisation
-- **DuckDB** — local SQL analysis
+- **Python** — pandas, openpyxl, DuckDB, matplotlib, ReportLab
+- **Power BI Desktop** — national market dashboard
+- **Git + GitHub** — versioning and publication
 
 ---
 
-## Key Insight
+## About LUXAR
 
-The Portuguese real estate market in 2025 is transacting at **4× the volume value** compared to the post-crisis lows of 2013, with prices still rising ~4% year-on-year. Volume (~43K transactions/quarter) has stabilised after the 2021–2022 boom peak.
+LUXAR delivers data intelligence and automation to real estate professionals in Portugal — from independent brokers to regional franchises.
 
----
-
-## Contact
-
-Built by **Tiago Antunes** — data, AI and automation for the Portuguese real estate ecosystem.
-
-[github.com/tiagoantunes-data](https://github.com/tiagoantunes-data)
+**Contact:** tiago@luxar.pt · [luxar.pt](https://luxar.pt)
